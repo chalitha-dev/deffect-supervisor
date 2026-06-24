@@ -1,0 +1,18 @@
+[1/5] cmd.exe /C "cd /D D:\Chalitha\expressIf\deffect_files\build\esp-idf\esptool_py && D:\Espressif\python_env\idf5.3_py3.11_env\Scripts\python.exe D:/Espressif/frameworks/esp-idf-v5.3.1/components/partition_table/check_sizes.py --offset 0x8000 partition --type app D:/Chalitha/expressIf/deffect_files/build/partition_table/partition-table.bin D:/Chalitha/expressIf/deffect_files/build/deffect-project.bin"
+deffect-project.bin binary size 0x12f340 bytes. Smallest app partition is 0x600000 bytes. 0x4d0cc0 bytes (80%) free.
+[2/5] Performing build step for 'bootloader'
+[1/1] cmd.exe /C "cd /D D:\Chalitha\expressIf\deffect_files\build\bootloader\esp-idf\esptool_py && D:\Espressif\python_env\idf5.3_py3.11_env\Scripts\python.exe D:/Espressif/frameworks/esp-idf-v5.3.1/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 D:/Chalitha/expressIf/deffect_files/build/bootloader/bootloader.bin"
+Bootloader binary size 0x5260 bytes. 0x2da0 bytes (36%) free.
+[2/3] cmd.exe /C "cd /D D:\Espressif\frameworks\esp-idf-v5.3.1\components\esptool_py && D:\Espressif\tools\cmake\3.24.0\bin\cmake.exe -D IDF_PATH=D:/Espressif/frameworks/esp-idf-v5.3.1 -D SERIAL_TOOL=D:/Espressif/python_env/idf5.3_py3.11_env/Scripts/python.exe;;D:/Espressif/frameworks/esp-idf-v5.3.1/components/esptool_py/esptool/esptool.py;--chip;esp32s3 -D SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args -D WORKING_DIRECTORY=D:/Chalitha/expressIf/deffect_files/build -P D:/Espressif/frameworks/esp-idf-v5.3.1/components/esptool.py --chip esp32s3 -p COM9 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 bootloader/bootloader.bin 0x10000 deffect-project.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.8.1
+Serial port COM9
+
+A fatal error occurred: Could not open COM9, the port is busy or doesn't exist.
+(could not open port 'COM9': PermissionError(13, 'Access is denied.', None, 5))
+
+Hint: Check if the port is not used by another task
+
+esptool_py/run_serial_tool.cmake"
+FAILED: CMakeFiles/flash D:/Chalitha/expressIf/deffect_files/build/CMakeFiles/flash 
+cmd.exe /C "cd /D D:\Espressif\frameworks\esp-idf-v5.3.1\components\esptool_py && D:\Espressif\tools\cmake\3.24.0\bin\cmake.exe -D IDF_PATH=D:/Espressif/frameworks/esp-idf-v5.3.1 -D SERIAL_TOOL=D:/Espressif/python_env/idf5.3_py3.11_env/Scripts/python.exe;;D:/Espressif/frameworks/esp-idf-v5.3.1/components/esptool_py/esptool/esptool.py;--chip;esp32s3 -D SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args -D WORKING_DIRECTORY=D:/Chalitha/expressIf/deffect_files/build -P D:/Espressif/frameworks/esp-idf-v5.3.1/components/esptool_py/run_serial_tool.cmake"
+ninja: build stopped: subcommand failed.

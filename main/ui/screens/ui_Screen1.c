@@ -13,6 +13,7 @@ lv_obj_t * ui_lblFailBtnText = NULL;
 lv_obj_t * ui_lblIPAddress = NULL;
 lv_obj_t * ui_ButtonContainer = NULL;
 lv_obj_t * ui_Keyboard4 = NULL;
+lv_obj_t * ui_btnRefresh = NULL;
 // event funtions
 void ui_event_Screen1(lv_event_t * e)
 {
@@ -67,6 +68,12 @@ void ui_Screen1_screen_init(void)
     lv_obj_clear_flag(ui_btnFail, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_color(ui_btnFail, lv_color_hex(0xDD0000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_btnFail, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_color(ui_btnFail, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_opa(ui_btnFail, 255, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_width(ui_btnFail, 1, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_spread(ui_btnFail, 5, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_ofs_x(ui_btnFail, 2, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_ofs_y(ui_btnFail, 2, LV_PART_MAIN | LV_STATE_PRESSED);
 
     ui_lblFailBtnText = lv_label_create(ui_Screen1);
     lv_obj_set_width(ui_lblFailBtnText, LV_SIZE_CONTENT);   /// 1
@@ -102,14 +109,27 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_flex_align(ui_ButtonContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 
     ui_Keyboard4 = lv_keyboard_create(ui_Screen1);
-    lv_obj_set_width(ui_Keyboard4, 736);
-    lv_obj_set_height(ui_Keyboard4, 312);
-    lv_obj_set_x(ui_Keyboard4, -3);
-    lv_obj_set_y(ui_Keyboard4, 0);
+    lv_obj_set_width(ui_Keyboard4, 772);
+    lv_obj_set_height(ui_Keyboard4, 276);
+    lv_obj_set_x(ui_Keyboard4, 1);
+    lv_obj_set_y(ui_Keyboard4, 6);
     lv_obj_set_align(ui_Keyboard4, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_Keyboard4, LV_OBJ_FLAG_HIDDEN);     /// Flags
 
-    lv_obj_set_style_text_font(ui_Keyboard4, &lv_font_montserrat_20, LV_PART_ITEMS | LV_STATE_DEFAULT);
+    ui_btnRefresh = lv_imgbtn_create(ui_Screen1);
+    lv_imgbtn_set_src(ui_btnRefresh, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_2129918560, NULL);
+    lv_imgbtn_set_src(ui_btnRefresh, LV_IMGBTN_STATE_PRESSED, NULL, &ui_img_2129918560, NULL);
+    lv_obj_set_width(ui_btnRefresh, 50);
+    lv_obj_set_height(ui_btnRefresh, 50);
+    lv_obj_set_x(ui_btnRefresh, 351);
+    lv_obj_set_y(ui_btnRefresh, 200);
+    lv_obj_set_align(ui_btnRefresh, LV_ALIGN_CENTER);
+    lv_obj_set_style_shadow_color(ui_btnRefresh, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_opa(ui_btnRefresh, 255, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_width(ui_btnRefresh, 1, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_spread(ui_btnRefresh, 5, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_ofs_x(ui_btnRefresh, 2, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_ofs_y(ui_btnRefresh, 2, LV_PART_MAIN | LV_STATE_PRESSED);
 
     lv_obj_add_event_cb(ui_txtSerialNumber, ui_event_txtSerialNumber, LV_EVENT_ALL, NULL);
     lv_keyboard_set_textarea(ui_Keyboard4, ui_txtSerialNumber);
@@ -130,5 +150,6 @@ void ui_Screen1_screen_destroy(void)
     ui_lblIPAddress = NULL;
     ui_ButtonContainer = NULL;
     ui_Keyboard4 = NULL;
+    ui_btnRefresh = NULL;
 
 }

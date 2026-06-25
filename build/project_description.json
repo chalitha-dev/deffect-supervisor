@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "deffect-project",
-    "project_version":    "1",
+    "project_version":    "b98754b-dirty",
     "project_path":       "D:/Chalitha/expressIf/deffect_files",
     "idf_path":           "D:/Espressif/frameworks/esp-idf-v5.3.1",
     "build_dir":          "D:/Chalitha/expressIf/deffect_files/build",
@@ -1225,7 +1225,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [ "espressif__esp_lcd_touch_gt911", "lvgl__lvgl" ],
             "file": "D:/Chalitha/expressIf/deffect_files/build/esp-idf/main/libmain.a",
-            "sources": [ "D:/Chalitha/expressIf/deffect_files/main/main.c", "D:/Chalitha/expressIf/deffect_files/main/ui_dynamic.c", "D:/Chalitha/expressIf/deffect_files/main/scan_logic.c", "D:/Chalitha/expressIf/deffect_files/main/ui_logic.c", "D:/Chalitha/expressIf/deffect_files/main/ui/components/ui_comp.c", "D:/Chalitha/expressIf/deffect_files/main/ui/components/ui_comp_btnfail.c", "D:/Chalitha/expressIf/deffect_files/main/ui/components/ui_comp_hook.c", "D:/Chalitha/expressIf/deffect_files/main/ui/screens/ui_Screen1.c", "D:/Chalitha/expressIf/deffect_files/main/ui/ui.c", "D:/Chalitha/expressIf/deffect_files/main/ui/ui_helpers.c" ],
+            "sources": [ "D:/Chalitha/expressIf/deffect_files/main/main.c", "D:/Chalitha/expressIf/deffect_files/main/ui_dynamic.c", "D:/Chalitha/expressIf/deffect_files/main/scan_logic.c", "D:/Chalitha/expressIf/deffect_files/main/ui/components/ui_comp.c", "D:/Chalitha/expressIf/deffect_files/main/ui/components/ui_comp_btnfail.c", "D:/Chalitha/expressIf/deffect_files/main/ui/components/ui_comp_hook.c", "D:/Chalitha/expressIf/deffect_files/main/ui/images/ui_img_2129918560.c", "D:/Chalitha/expressIf/deffect_files/main/ui/screens/ui_Screen1.c", "D:/Chalitha/expressIf/deffect_files/main/ui/ui.c", "D:/Chalitha/expressIf/deffect_files/main/ui/ui_helpers.c" ],
             "include_dirs": [ ".", "ui" ]
         },
         "mbedtls": {

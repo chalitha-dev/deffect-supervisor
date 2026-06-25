@@ -34,7 +34,6 @@
 // Core function references
 void generate_dynamic_defect_buttons(void);
 extern void fail_button_click_cb(lv_event_t * e);
-
 extern void on_serial_number_scanned(const char* new_serial);
 
 static const char *APP_TAG = "main_app";
@@ -112,6 +111,12 @@ static void ip_event_handler(void* arg, esp_event_base_t event_base, int32_t eve
         char ip_str[16];
         esp_ip4addr_ntoa(&event->ip_info.ip, ip_str, sizeof(ip_str));
         ESP_LOGI("WIFI", "Got IP Address: %s", ip_str);
+        
+        // ==========================================================
+        // SAFE AUTO-TRIGGER ON NETWORK UP / RESET
+        // ==========================================================
+        // Wi-Fi is up and working. Safely trigger API call to generate buttons.
+        generate_dynamic_defect_buttons();
 
         if (ui_lblIPAddress != NULL) {
             lv_label_set_text(ui_lblIPAddress, ip_str);
@@ -166,11 +171,12 @@ void app_main(void) {
     display();
     ui_init();
     
-    generate_dynamic_defect_buttons();
+    // REMOVED: generate_dynamic_defect_buttons() was removed from here.
+    // It is handled asynchronously inside ip_event_handler to prevent network exceptions on boot.
     
     extern lv_obj_t * ui_Keyboard4; 
     extern lv_obj_t * ui_txtSerialNumber; 
-    extern void keyboard_ready_click_cb(lv_event_t * e); // Reference our new function
+    extern void keyboard_ready_click_cb(lv_event_t * e); 
 
     if (ui_Keyboard4 != NULL && ui_txtSerialNumber != NULL) {
         // Link typing output target field
@@ -179,7 +185,7 @@ void app_main(void) {
         // Ensure keyboard starts hidden
         lv_obj_add_flag(ui_Keyboard4, LV_OBJ_FLAG_HIDDEN);
         
-        // WATCH FOR THE ENTER/CHECKMARK (✓) BUTTON EVENT HERE 👇
+        // WATCH FOR THE ENTER/CHECKMARK (✓) BUTTON EVENT
         lv_obj_add_event_cb(ui_Keyboard4, keyboard_ready_click_cb, LV_EVENT_READY, NULL);
         
         ESP_LOGI(APP_TAG, "Keyboard submission event links configured perfectly.");

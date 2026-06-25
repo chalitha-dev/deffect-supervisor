@@ -1,5 +1,3 @@
--- git rev-parse returned 'fatal: not a git repository (or any of the parent directories): .git'
--- Could not use 'git describe' to determine PROJECT_VER.
 -- Building ESP-IDF components for target esp32s3
 Using component placed at D:\Chalitha\expressIf\deffect_files\components\espressif__esp_lcd_touch for dependency "espressif/esp_lcd_touch"(introduced by component "espressif/esp_lcd_touch_gt911")
 Using component placed at D:\Chalitha\expressIf\deffect_files\components\espressif__esp_lcd_touch_gt911 for dependency "espressif/esp_lcd_touch_gt911", specified in D:\Chalitha\expressIf\deffect_files\main\idf_component.yml
@@ -15,7 +13,7 @@ Processing 4 dependencies:
 Loading defaults file D:/Chalitha/expressIf/deffect_files/sdkconfig.defaults...
 Loading defaults file D:/Chalitha/expressIf/deffect_files/sdkconfig.defaults.esp32s3...
 -- Compiler supported targets: xtensa-esp-elf
--- App "deffect-project" version: 1
+-- App "deffect-project" version: b98754b-dirty
 -- Adding linker script D:/Chalitha/expressIf/deffect_files/build/esp-idf/esp_system/ld/memory.ld
 -- Adding linker script D:/Chalitha/expressIf/deffect_files/build/esp-idf/esp_system/ld/sections.ld.in
 -- Adding linker script D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_rom/esp32s3/ld/esp32s3.rom.ld

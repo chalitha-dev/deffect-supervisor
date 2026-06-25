@@ -23,6 +23,7 @@ extern lv_obj_t * ui_lblFailBtnText;
 extern lv_obj_t * ui_lblIPAddress;
 extern lv_obj_t * ui_ButtonContainer;
 extern lv_obj_t * ui_Keyboard4;
+extern lv_obj_t * ui_btnRefresh;
 // CUSTOM VARIABLES
 
 #ifdef __cplusplus

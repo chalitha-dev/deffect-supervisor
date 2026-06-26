@@ -14,6 +14,7 @@ lv_obj_t * ui_lblIPAddress = NULL;
 lv_obj_t * ui_ButtonContainer = NULL;
 lv_obj_t * ui_Keyboard4 = NULL;
 lv_obj_t * ui_btnRefresh = NULL;
+lv_obj_t * ui_lblSelectedDeffectCode = NULL;
 // event funtions
 void ui_event_Screen1(lv_event_t * e)
 {
@@ -57,6 +58,8 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_align(ui_txtSerialNumber, LV_ALIGN_CENTER);
     lv_textarea_set_placeholder_text(ui_txtSerialNumber, "Enter Serial Number");
     lv_textarea_set_one_line(ui_txtSerialNumber, true);
+
+    lv_obj_set_style_text_font(ui_txtSerialNumber, &lv_font_montserrat_18, LV_PART_TEXTAREA_PLACEHOLDER | LV_STATE_DEFAULT);
 
     ui_btnFail = lv_btn_create(ui_Screen1);
     lv_obj_set_width(ui_btnFail, 222);
@@ -124,12 +127,15 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_x(ui_btnRefresh, 351);
     lv_obj_set_y(ui_btnRefresh, 200);
     lv_obj_set_align(ui_btnRefresh, LV_ALIGN_CENTER);
-    lv_obj_set_style_shadow_color(ui_btnRefresh, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_PRESSED);
-    lv_obj_set_style_shadow_opa(ui_btnRefresh, 255, LV_PART_MAIN | LV_STATE_PRESSED);
-    lv_obj_set_style_shadow_width(ui_btnRefresh, 1, LV_PART_MAIN | LV_STATE_PRESSED);
-    lv_obj_set_style_shadow_spread(ui_btnRefresh, 5, LV_PART_MAIN | LV_STATE_PRESSED);
-    lv_obj_set_style_shadow_ofs_x(ui_btnRefresh, 2, LV_PART_MAIN | LV_STATE_PRESSED);
-    lv_obj_set_style_shadow_ofs_y(ui_btnRefresh, 2, LV_PART_MAIN | LV_STATE_PRESSED);
+
+    ui_lblSelectedDeffectCode = lv_label_create(ui_Screen1);
+    lv_obj_set_width(ui_lblSelectedDeffectCode, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_lblSelectedDeffectCode, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_lblSelectedDeffectCode, 306);
+    lv_obj_set_y(ui_lblSelectedDeffectCode, -185);
+    lv_obj_set_align(ui_lblSelectedDeffectCode, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_lblSelectedDeffectCode, "");
+    lv_obj_set_style_text_font(ui_lblSelectedDeffectCode, &lv_font_montserrat_26, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_txtSerialNumber, ui_event_txtSerialNumber, LV_EVENT_ALL, NULL);
     lv_keyboard_set_textarea(ui_Keyboard4, ui_txtSerialNumber);
@@ -151,5 +157,6 @@ void ui_Screen1_screen_destroy(void)
     ui_ButtonContainer = NULL;
     ui_Keyboard4 = NULL;
     ui_btnRefresh = NULL;
+    ui_lblSelectedDeffectCode = NULL;
 
 }

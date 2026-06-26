@@ -16,10 +16,15 @@ static const char *TAG = "UI_DYNAMIC";
 void generate_dynamic_defect_buttons(void);
 extern void defect_button_click_cb(lv_event_t * e);
 
+// FIXED: Added forward declaration to resolve implicit function build error
+static void build_defect_buttons_ui(void); 
+static void ui_update_async_cb(void * p);
+
 typedef struct {
     char code[32];
     char name[64];
     uint32_t click_count; 
+    bool is_selected; // Tracks selection state across layout reconstructions
 } dynamic_defect_t;
 
 static dynamic_defect_t *api_defects = NULL;
@@ -57,24 +62,41 @@ static int compare_defects(const void *a, const void *b) {
     return natural_code_compare(defectA->code, defectB->code);
 }
 
-static void ui_update_async_cb(void * p);
-
 static void custom_defect_button_handler(lv_event_t * e) {
     lv_obj_t * btn = lv_event_get_target(e);
     char * target_code = (char *)btn->user_data;
 
-    if (target_code != NULL && api_defects != NULL) {
-        for (int i = 0; i < api_defect_count; i++) {
-            if (strcmp(api_defects[i].code, target_code) == 0) {
-                // Increment locally and instantly re-sort position
-                api_defects[i].click_count++;
-                qsort(api_defects, api_defect_count, sizeof(dynamic_defect_t), compare_defects);
-                lv_async_call(ui_update_async_cb, NULL);
-                break;
+    if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
+        if (target_code != NULL && api_defects != NULL) {
+            
+            // 1. First, update the visual tracking text label immediately
+            if (ui_lblSelectedDeffectCode != NULL) {
+                lv_label_set_text(ui_lblSelectedDeffectCode, target_code);
             }
+            
+            // 2. CRITICAL FIX: Run the external callback logic IMMEDIATELY 
+            // while the button is still in its original position/index.
+            defect_button_click_cb(e);
+
+            // 3. Now update selection properties globally inside the data array
+            for (int i = 0; i < api_defect_count; i++) {
+                if (strcmp(api_defects[i].code, target_code) == 0) {
+                    api_defects[i].click_count++;
+                    api_defects[i].is_selected = true;
+                } else {
+                    api_defects[i].is_selected = false;
+                }
+            }
+            
+            // 4. Sort the database structure array
+            qsort(api_defects, api_defect_count, sizeof(dynamic_defect_t), compare_defects);
+            
+            // 5. Defer the layout reconstruction safely using an async call.
+            // This ensures LVGL finishes handling the current click event completely 
+            // before the buttons are destroyed and recreated.
+            lv_async_call(ui_update_async_cb, NULL);
         }
     }
-    defect_button_click_cb(e);
 }
 
 static void custom_ui_refresh_handler(lv_event_t * e) {
@@ -82,6 +104,7 @@ static void custom_ui_refresh_handler(lv_event_t * e) {
     if (api_defects != NULL) {
         for (int i = 0; i < api_defect_count; i++) {
             api_defects[i].click_count = 0;
+            api_defects[i].is_selected = false;
         }
     }
     if (ui_ButtonContainer != NULL) {
@@ -120,11 +143,17 @@ static void build_defect_buttons_ui(void) {
     lv_obj_clean(ui_ButtonContainer);
     lv_obj_set_style_pad_row(ui_ButtonContainer, 10, 0); 
 
-    // CONFIGURING SCROLLBAR FOR VERTICAL ONLY
+    // Explicit Flex Alignment Setup
+    lv_obj_set_layout(ui_ButtonContainer, LV_LAYOUT_FLEX);
+    lv_obj_set_flex_flow(ui_ButtonContainer, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_flex_align(ui_ButtonContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+
     lv_obj_set_scroll_dir(ui_ButtonContainer, LV_DIR_VER);
     lv_obj_add_flag(ui_ButtonContainer, LV_OBJ_FLAG_SCROLLABLE); 
-    lv_obj_set_scrollbar_mode(ui_ButtonContainer, LV_SCROLLBAR_MODE_AUTO); // Visible when scrolling
+    lv_obj_set_scrollbar_mode(ui_ButtonContainer, LV_SCROLLBAR_MODE_AUTO);
     lv_obj_clear_flag(ui_ButtonContainer, LV_OBJ_FLAG_SCROLL_CHAIN_HOR);
+
+    lv_obj_t *focused_btn = NULL;
 
     for (int i = 0; i < api_defect_count; i++) {
         lv_obj_t * btn = lv_btn_create(ui_ButtonContainer);
@@ -132,7 +161,22 @@ static void build_defect_buttons_ui(void) {
         lv_obj_set_height(btn, 55); 
         btn->user_data = (void*)api_defects[i].code; 
 
-        lv_obj_set_style_bg_color(btn, lv_palette_main(LV_PALETTE_GREEN), LV_PART_MAIN);
+        lv_obj_add_flag(btn, LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_SCROLL_ON_FOCUS);
+        lv_obj_clear_flag(btn, LV_OBJ_FLAG_SCROLLABLE); 
+
+        // Default Unchecked State Styles (Green background)
+        lv_obj_set_style_bg_color(btn, lv_palette_main(LV_PALETTE_GREEN), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_opa(btn, LV_OPA_COVER, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+        // Checked State Styles (Yellow background)
+        lv_obj_set_style_bg_color(btn, lv_color_hex(0xDFD903), LV_PART_MAIN | LV_STATE_CHECKED);
+        lv_obj_set_style_bg_opa(btn, LV_OPA_COVER, LV_PART_MAIN | LV_STATE_CHECKED);
+
+        // Restore Selection States Accurately
+        if (api_defects[i].is_selected) {
+            lv_obj_add_state(btn, LV_STATE_CHECKED);
+            focused_btn = btn; 
+        }
 
         lv_obj_t * label = lv_label_create(btn);
         lv_label_set_text_fmt(label, "[%s]    %s", api_defects[i].code, api_defects[i].name);
@@ -144,24 +188,28 @@ static void build_defect_buttons_ui(void) {
             lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
         #endif
 
-        lv_obj_clear_flag(btn, LV_OBJ_FLAG_SCROLLABLE); // Buttons don't scroll, the container does
         lv_obj_add_event_cb(btn, custom_defect_button_handler, LV_EVENT_CLICKED, NULL);
     }
-    lv_obj_scroll_to_y(ui_ButtonContainer, 0, LV_ANIM_OFF);
+
+    // Refresh rendering geometries
+    lv_obj_update_layout(ui_ButtonContainer);
     lv_obj_invalidate(ui_ButtonContainer);
+
+    // Keep active viewport centered around tracking changes
+    if (focused_btn != NULL) {
+        lv_obj_scroll_to_view(focused_btn, LV_ANIM_OFF);
+    } else {
+        lv_obj_scroll_to_y(ui_ButtonContainer, 0, LV_ANIM_OFF);
+    }
 }
 
 static void ui_update_async_cb(void * p) {
     build_defect_buttons_ui();
 }
 
-// ====================================================================
-// HOURLY BACKGROUND DATABASE SYNCHRONIZATION TASK
-// ====================================================================
 static void hourly_database_sync_task(void *pvParameters) {
     while (1) {
-        // FIXED: 1 hour = 3,600,000 milliseconds
-        vTaskDelay(pdMS_TO_TICKS(60000));
+        vTaskDelay(pdMS_TO_TICKS(3600000)); // Real 1 Hour delay loop window cadence (3,600,000ms)
         
         if (api_defects == NULL || api_defect_count == 0) continue;
 
@@ -243,8 +291,8 @@ static void fetch_defects_task(void *pvParameters) {
                                     api_defects[i].code[sizeof(api_defects[i].code) - 1] = '\0';
                                     strncpy(api_defects[i].name, name->valuestring, sizeof(api_defects[i].name) - 1);
                                     api_defects[i].name[sizeof(api_defects[i].name) - 1] = '\0';
+                                    api_defects[i].is_selected = false;
                                     
-                                    // Parse total_clicks string from JSON payload payload packet to integer
                                     if (clicks && clicks->valuestring) {
                                         api_defects[i].click_count = (uint32_t)atoi(clicks->valuestring);
                                     } else {
@@ -252,7 +300,6 @@ static void fetch_defects_task(void *pvParameters) {
                                     }
                                 }
                             }
-                            // Sort data by initial total_clicks before rendering on startup
                             qsort(api_defects, api_defect_count, sizeof(dynamic_defect_t), compare_defects);
                             fetch_success = true; 
                         }

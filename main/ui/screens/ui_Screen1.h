@@ -24,6 +24,7 @@ extern lv_obj_t * ui_lblIPAddress;
 extern lv_obj_t * ui_ButtonContainer;
 extern lv_obj_t * ui_Keyboard4;
 extern lv_obj_t * ui_btnRefresh;
+extern lv_obj_t * ui_lblSelectedDeffectCode;
 // CUSTOM VARIABLES
 
 #ifdef __cplusplus

@@ -6,21 +6,24 @@
 #include "../ui.h"
 
 lv_obj_t * ui_Screen1 = NULL;
+lv_obj_t * ui_btnRefresh = NULL;
+lv_obj_t * ui_lblIPAddress = NULL;
+lv_obj_t * ui_mainPanel = NULL;
 lv_obj_t * ui_lblSerialNumber = NULL;
 lv_obj_t * ui_txtSerialNumber = NULL;
 lv_obj_t * ui_btnFail = NULL;
 lv_obj_t * ui_lblFailBtnText = NULL;
-lv_obj_t * ui_lblIPAddress = NULL;
 lv_obj_t * ui_ButtonContainer = NULL;
-lv_obj_t * ui_Keyboard4 = NULL;
-lv_obj_t * ui_btnRefresh = NULL;
+lv_obj_t * ui_btnFinish = NULL;
+lv_obj_t * ui_lblFinish = NULL;
 lv_obj_t * ui_lblSelectedDeffectCode = NULL;
+lv_obj_t * ui_Keyboard4 = NULL;
 // event funtions
-void ui_event_Screen1(lv_event_t * e)
+void ui_event_mainPanel(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
-    if(event_code == LV_EVENT_PRESSED) {
+    if(event_code == LV_EVENT_CLICKED) {
         _ui_flag_modify(ui_Keyboard4, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
     }
 }
@@ -29,7 +32,7 @@ void ui_event_txtSerialNumber(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
-    if(event_code == LV_EVENT_PRESSED) {
+    if(event_code == LV_EVENT_CLICKED) {
         _ui_flag_modify(ui_Keyboard4, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
     }
 }
@@ -41,35 +44,65 @@ void ui_Screen1_screen_init(void)
     ui_Screen1 = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_Screen1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
+    ui_btnRefresh = lv_btn_create(ui_Screen1);
+    lv_obj_set_width(ui_btnRefresh, 17);
+    lv_obj_set_height(ui_btnRefresh, 13);
+    lv_obj_set_x(ui_btnRefresh, 386);
+    lv_obj_set_y(ui_btnRefresh, -226);
+    lv_obj_set_align(ui_btnRefresh, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_btnRefresh, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_clear_flag(ui_btnRefresh, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    ui_lblIPAddress = lv_label_create(ui_Screen1);
+    lv_obj_set_width(ui_lblIPAddress, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_lblIPAddress, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_lblIPAddress, 396);
+    lv_obj_set_y(ui_lblIPAddress, -225);
+    lv_obj_set_align(ui_lblIPAddress, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_lblIPAddress, "");
+    lv_obj_add_flag(ui_lblIPAddress, LV_OBJ_FLAG_HIDDEN);     /// Flags
+
+    ui_mainPanel = lv_obj_create(ui_Screen1);
+    lv_obj_set_width(ui_mainPanel, 832);
+    lv_obj_set_height(ui_mainPanel, 549);
+    lv_obj_set_x(ui_mainPanel, -4);
+    lv_obj_set_y(ui_mainPanel, -21);
+    lv_obj_set_align(ui_mainPanel, LV_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_mainPanel, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
     ui_lblSerialNumber = lv_label_create(ui_Screen1);
     lv_obj_set_width(ui_lblSerialNumber, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblSerialNumber, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblSerialNumber, -148);
-    lv_obj_set_y(ui_lblSerialNumber, -186);
+    lv_obj_set_x(ui_lblSerialNumber, -352);
+    lv_obj_set_y(ui_lblSerialNumber, -198);
     lv_obj_set_align(ui_lblSerialNumber, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblSerialNumber, "S/N:");
-    lv_obj_set_style_text_font(ui_lblSerialNumber, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_lblSerialNumber, &lv_font_montserrat_28, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_txtSerialNumber = lv_textarea_create(ui_Screen1);
-    lv_obj_set_width(ui_txtSerialNumber, 244);
+    lv_obj_set_width(ui_txtSerialNumber, 251);
     lv_obj_set_height(ui_txtSerialNumber, LV_SIZE_CONTENT);    /// 70
-    lv_obj_set_x(ui_txtSerialNumber, 6);
-    lv_obj_set_y(ui_txtSerialNumber, -184);
+    lv_obj_set_x(ui_txtSerialNumber, -190);
+    lv_obj_set_y(ui_txtSerialNumber, -199);
     lv_obj_set_align(ui_txtSerialNumber, LV_ALIGN_CENTER);
-    lv_textarea_set_placeholder_text(ui_txtSerialNumber, "Enter Serial Number");
+    lv_textarea_set_accepted_chars(ui_txtSerialNumber, "1234567890");
+    lv_textarea_set_placeholder_text(ui_txtSerialNumber, "Scan Serial Number");
     lv_textarea_set_one_line(ui_txtSerialNumber, true);
+    lv_obj_set_style_text_color(ui_txtSerialNumber, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_txtSerialNumber, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_txtSerialNumber, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    lv_obj_set_style_text_font(ui_txtSerialNumber, &lv_font_montserrat_18, LV_PART_TEXTAREA_PLACEHOLDER | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_txtSerialNumber, &lv_font_montserrat_22, LV_PART_TEXTAREA_PLACEHOLDER | LV_STATE_DEFAULT);
 
     ui_btnFail = lv_btn_create(ui_Screen1);
-    lv_obj_set_width(ui_btnFail, 222);
-    lv_obj_set_height(ui_btnFail, 62);
-    lv_obj_set_x(ui_btnFail, 10);
-    lv_obj_set_y(ui_btnFail, 199);
+    lv_obj_set_width(ui_btnFail, 144);
+    lv_obj_set_height(ui_btnFail, 54);
+    lv_obj_set_x(ui_btnFail, 21);
+    lv_obj_set_y(ui_btnFail, -200);
     lv_obj_set_align(ui_btnFail, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_btnFail, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_btnFail, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_bg_color(ui_btnFail, lv_color_hex(0xDD0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_btnFail, lv_color_hex(0xB40404), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_btnFail, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_color(ui_btnFail, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_PRESSED);
     lv_obj_set_style_shadow_opa(ui_btnFail, 255, LV_PART_MAIN | LV_STATE_PRESSED);
@@ -81,65 +114,72 @@ void ui_Screen1_screen_init(void)
     ui_lblFailBtnText = lv_label_create(ui_Screen1);
     lv_obj_set_width(ui_lblFailBtnText, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblFailBtnText, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblFailBtnText, 11);
-    lv_obj_set_y(ui_lblFailBtnText, 197);
+    lv_obj_set_x(ui_lblFailBtnText, 22);
+    lv_obj_set_y(ui_lblFailBtnText, -201);
     lv_obj_set_align(ui_lblFailBtnText, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblFailBtnText, "Fail");
     lv_obj_set_style_text_color(ui_lblFailBtnText, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_lblFailBtnText, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_lblFailBtnText, &lv_font_montserrat_26, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_lblIPAddress = lv_label_create(ui_Screen1);
-    lv_obj_set_width(ui_lblIPAddress, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_lblIPAddress, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblIPAddress, -321);
-    lv_obj_set_y(ui_lblIPAddress, 218);
-    lv_obj_set_align(ui_lblIPAddress, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_lblIPAddress, "IP ADDRESS");
-    lv_obj_set_style_text_font(ui_lblIPAddress, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_color(ui_lblIPAddress, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_opa(ui_lblIPAddress, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_shadow_color(ui_lblIPAddress, lv_color_hex(0x110101), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_shadow_opa(ui_lblIPAddress, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-
     ui_ButtonContainer = lv_obj_create(ui_Screen1);
-    lv_obj_set_width(ui_ButtonContainer, 692);
-    lv_obj_set_height(ui_ButtonContainer, 286);
-    lv_obj_set_x(ui_ButtonContainer, -1);
-    lv_obj_set_y(ui_ButtonContainer, 8);
+    lv_obj_set_width(ui_ButtonContainer, 771);
+    lv_obj_set_height(ui_ButtonContainer, 346);
+    lv_obj_set_x(ui_ButtonContainer, 1);
+    lv_obj_set_y(ui_ButtonContainer, 53);
     lv_obj_set_align(ui_ButtonContainer, LV_ALIGN_CENTER);
     lv_obj_set_flex_flow(ui_ButtonContainer, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_flex_align(ui_ButtonContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 
-    ui_Keyboard4 = lv_keyboard_create(ui_Screen1);
-    lv_obj_set_width(ui_Keyboard4, 772);
-    lv_obj_set_height(ui_Keyboard4, 276);
-    lv_obj_set_x(ui_Keyboard4, 1);
-    lv_obj_set_y(ui_Keyboard4, 6);
-    lv_obj_set_align(ui_Keyboard4, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Keyboard4, LV_OBJ_FLAG_HIDDEN);     /// Flags
+    ui_btnFinish = lv_btn_create(ui_Screen1);
+    lv_obj_set_width(ui_btnFinish, 144);
+    lv_obj_set_height(ui_btnFinish, 54);
+    lv_obj_set_x(ui_btnFinish, 178);
+    lv_obj_set_y(ui_btnFinish, -200);
+    lv_obj_set_align(ui_btnFinish, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_btnFinish, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_clear_flag(ui_btnFinish, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_btnFinish, lv_color_hex(0x1F9319), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_btnFinish, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_color(ui_btnFinish, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_opa(ui_btnFinish, 255, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_width(ui_btnFinish, 1, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_spread(ui_btnFinish, 5, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_ofs_x(ui_btnFinish, 2, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_ofs_y(ui_btnFinish, 2, LV_PART_MAIN | LV_STATE_PRESSED);
 
-    ui_btnRefresh = lv_imgbtn_create(ui_Screen1);
-    lv_imgbtn_set_src(ui_btnRefresh, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_2129918560, NULL);
-    lv_imgbtn_set_src(ui_btnRefresh, LV_IMGBTN_STATE_PRESSED, NULL, &ui_img_2129918560, NULL);
-    lv_obj_set_width(ui_btnRefresh, 50);
-    lv_obj_set_height(ui_btnRefresh, 50);
-    lv_obj_set_x(ui_btnRefresh, 351);
-    lv_obj_set_y(ui_btnRefresh, 200);
-    lv_obj_set_align(ui_btnRefresh, LV_ALIGN_CENTER);
+    ui_lblFinish = lv_label_create(ui_Screen1);
+    lv_obj_set_width(ui_lblFinish, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_lblFinish, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_lblFinish, 180);
+    lv_obj_set_y(ui_lblFinish, -202);
+    lv_obj_set_align(ui_lblFinish, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_lblFinish, "Finish");
+    lv_obj_set_style_text_color(ui_lblFinish, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_lblFinish, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_lblFinish, &lv_font_montserrat_26, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_lblSelectedDeffectCode = lv_label_create(ui_Screen1);
     lv_obj_set_width(ui_lblSelectedDeffectCode, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblSelectedDeffectCode, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblSelectedDeffectCode, 306);
-    lv_obj_set_y(ui_lblSelectedDeffectCode, -185);
+    lv_obj_set_x(ui_lblSelectedDeffectCode, -10);
+    lv_obj_set_y(ui_lblSelectedDeffectCode, -145);
     lv_obj_set_align(ui_lblSelectedDeffectCode, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblSelectedDeffectCode, "");
-    lv_obj_set_style_text_font(ui_lblSelectedDeffectCode, &lv_font_montserrat_26, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_lblSelectedDeffectCode, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_Keyboard4 = lv_keyboard_create(ui_Screen1);
+    lv_obj_set_width(ui_Keyboard4, 776);
+    lv_obj_set_height(ui_Keyboard4, 343);
+    lv_obj_set_x(ui_Keyboard4, 0);
+    lv_obj_set_y(ui_Keyboard4, 53);
+    lv_obj_set_align(ui_Keyboard4, LV_ALIGN_CENTER);
+
+    lv_obj_set_style_text_font(ui_Keyboard4, &lv_font_montserrat_24, LV_PART_ITEMS | LV_STATE_DEFAULT);
+
+    lv_obj_add_event_cb(ui_mainPanel, ui_event_mainPanel, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_txtSerialNumber, ui_event_txtSerialNumber, LV_EVENT_ALL, NULL);
     lv_keyboard_set_textarea(ui_Keyboard4, ui_txtSerialNumber);
-    lv_obj_add_event_cb(ui_Screen1, ui_event_Screen1, LV_EVENT_ALL, NULL);
 
 }
 
@@ -149,14 +189,17 @@ void ui_Screen1_screen_destroy(void)
 
     // NULL screen variables
     ui_Screen1 = NULL;
+    ui_btnRefresh = NULL;
+    ui_lblIPAddress = NULL;
+    ui_mainPanel = NULL;
     ui_lblSerialNumber = NULL;
     ui_txtSerialNumber = NULL;
     ui_btnFail = NULL;
     ui_lblFailBtnText = NULL;
-    ui_lblIPAddress = NULL;
     ui_ButtonContainer = NULL;
-    ui_Keyboard4 = NULL;
-    ui_btnRefresh = NULL;
+    ui_btnFinish = NULL;
+    ui_lblFinish = NULL;
     ui_lblSelectedDeffectCode = NULL;
+    ui_Keyboard4 = NULL;
 
 }

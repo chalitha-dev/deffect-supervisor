@@ -199,4 +199,11 @@ void app_main(void) {
         lv_obj_add_event_cb(ui_btnFail, fail_button_click_cb, LV_EVENT_CLICKED, NULL);
         ESP_LOGI(APP_TAG, "Hook connected perfectly for layout Failure operations.");
     }
+    
+    extern lv_obj_t * ui_btnFinish;
+    extern void finish_button_click_cb(lv_event_t * e);
+    if (ui_btnFinish != NULL) {
+        lv_obj_add_event_cb(ui_btnFinish, finish_button_click_cb, LV_EVENT_CLICKED, NULL);
+        ESP_LOGI(APP_TAG, "Hook connected perfectly for layout Finish/Pass operations.");
+    }
 }

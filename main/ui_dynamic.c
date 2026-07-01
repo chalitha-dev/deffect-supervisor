@@ -16,7 +16,6 @@ static const char *TAG = "UI_DYNAMIC";
 void generate_dynamic_defect_buttons(void);
 extern void defect_button_click_cb(lv_event_t * e);
 
-// FIXED: Added forward declaration to resolve implicit function build error
 static void build_defect_buttons_ui(void); 
 static void ui_update_async_cb(void * p);
 
@@ -24,7 +23,7 @@ typedef struct {
     char code[32];
     char name[64];
     uint32_t click_count; 
-    bool is_selected; // Tracks selection state across layout reconstructions
+    bool is_selected; 
 } dynamic_defect_t;
 
 static dynamic_defect_t *api_defects = NULL;
@@ -54,11 +53,10 @@ static int natural_code_compare(const char *s1, const char *s2) {
     return strcmp(s1, s2);
 }
 
+// FIXED: Removed click_count comparison to maintain a permanent general ascending order
 static int compare_defects(const void *a, const void *b) {
     const dynamic_defect_t *defectA = (const dynamic_defect_t *)a;
     const dynamic_defect_t *defectB = (const dynamic_defect_t *)b;
-    if (defectA->click_count < defectB->click_count) return 1;
-    if (defectA->click_count > defectB->click_count) return -1;
     return natural_code_compare(defectA->code, defectB->code);
 }
 
@@ -69,31 +67,25 @@ static void custom_defect_button_handler(lv_event_t * e) {
     if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
         if (target_code != NULL && api_defects != NULL) {
             
-            // 1. First, update the visual tracking text label immediately
-            if (ui_lblSelectedDeffectCode != NULL) {
-                lv_label_set_text(ui_lblSelectedDeffectCode, target_code);
-            }
-            
-            // 2. CRITICAL FIX: Run the external callback logic IMMEDIATELY 
-            // while the button is still in its original position/index.
-            defect_button_click_cb(e);
-
-            // 3. Now update selection properties globally inside the data array
+            // Now update selection properties globally inside the data array
             for (int i = 0; i < api_defect_count; i++) {
                 if (strcmp(api_defects[i].code, target_code) == 0) {
                     api_defects[i].click_count++;
                     api_defects[i].is_selected = true;
+
+                    // FIXED: Update the external visual tracking label to format: [code] name
+                    if (ui_lblSelectedDeffectCode != NULL) {
+                        lv_label_set_text_fmt(ui_lblSelectedDeffectCode, "[%s] %s", api_defects[i].code, api_defects[i].name);
+                    }
                 } else {
                     api_defects[i].is_selected = false;
                 }
             }
             
-            // 4. Sort the database structure array
-            qsort(api_defects, api_defect_count, sizeof(dynamic_defect_t), compare_defects);
+            // Run the external callback logic
+            defect_button_click_cb(e);
             
-            // 5. Defer the layout reconstruction safely using an async call.
-            // This ensures LVGL finishes handling the current click event completely 
-            // before the buttons are destroyed and recreated.
+            // Array layout order does not change anymore, but we refresh to apply the visual CHECKED state
             lv_async_call(ui_update_async_cb, NULL);
         }
     }
@@ -141,12 +133,13 @@ static void build_defect_buttons_ui(void) {
 
     lv_obj_clear_flag(ui_ButtonContainer, LV_OBJ_FLAG_HIDDEN);
     lv_obj_clean(ui_ButtonContainer);
-    lv_obj_set_style_pad_row(ui_ButtonContainer, 10, 0); 
+    
+    lv_obj_set_style_pad_row(ui_ButtonContainer, 6, 0); 
+    lv_obj_set_style_pad_column(ui_ButtonContainer, 6, 0); 
 
-    // Explicit Flex Alignment Setup
     lv_obj_set_layout(ui_ButtonContainer, LV_LAYOUT_FLEX);
-    lv_obj_set_flex_flow(ui_ButtonContainer, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_flex_align(ui_ButtonContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+    lv_obj_set_flex_flow(ui_ButtonContainer, LV_FLEX_FLOW_ROW_WRAP);
+    lv_obj_set_flex_align(ui_ButtonContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 
     lv_obj_set_scroll_dir(ui_ButtonContainer, LV_DIR_VER);
     lv_obj_add_flag(ui_ButtonContainer, LV_OBJ_FLAG_SCROLLABLE); 
@@ -157,8 +150,10 @@ static void build_defect_buttons_ui(void) {
 
     for (int i = 0; i < api_defect_count; i++) {
         lv_obj_t * btn = lv_btn_create(ui_ButtonContainer);
-        lv_obj_set_width(btn, lv_pct(95));
-        lv_obj_set_height(btn, 55); 
+        
+        // FIXED: Extended Grid structure from 10 columns to 12 columns (~7% width leaves room for paddings)
+        lv_obj_set_width(btn, lv_pct(7));
+        lv_obj_set_height(btn, 45); 
         btn->user_data = (void*)api_defects[i].code; 
 
         lv_obj_add_flag(btn, LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_SCROLL_ON_FOCUS);
@@ -172,15 +167,16 @@ static void build_defect_buttons_ui(void) {
         lv_obj_set_style_bg_color(btn, lv_color_hex(0xDFD903), LV_PART_MAIN | LV_STATE_CHECKED);
         lv_obj_set_style_bg_opa(btn, LV_OPA_COVER, LV_PART_MAIN | LV_STATE_CHECKED);
 
-        // Restore Selection States Accurately
+        // Retain Checked toggle states on redraws
         if (api_defects[i].is_selected) {
             lv_obj_add_state(btn, LV_STATE_CHECKED);
             focused_btn = btn; 
         }
 
+        // Displays ONLY the Defect Code inside the grid button
         lv_obj_t * label = lv_label_create(btn);
-        lv_label_set_text_fmt(label, "[%s]    %s", api_defects[i].code, api_defects[i].name);
-        lv_obj_align(label, LV_ALIGN_LEFT_MID, 20, 0);
+        lv_label_set_text(label, api_defects[i].code);
+        lv_obj_center(label);
 
         #if defined(LV_FONT_MONTSERRAT_16)
             lv_obj_set_style_text_font(label, &lv_font_montserrat_16, 0);
@@ -191,11 +187,9 @@ static void build_defect_buttons_ui(void) {
         lv_obj_add_event_cb(btn, custom_defect_button_handler, LV_EVENT_CLICKED, NULL);
     }
 
-    // Refresh rendering geometries
     lv_obj_update_layout(ui_ButtonContainer);
     lv_obj_invalidate(ui_ButtonContainer);
 
-    // Keep active viewport centered around tracking changes
     if (focused_btn != NULL) {
         lv_obj_scroll_to_view(focused_btn, LV_ANIM_OFF);
     } else {
@@ -209,7 +203,7 @@ static void ui_update_async_cb(void * p) {
 
 static void hourly_database_sync_task(void *pvParameters) {
     while (1) {
-        vTaskDelay(pdMS_TO_TICKS(3600000)); // Real 1 Hour delay loop window cadence (3,600,000ms)
+        vTaskDelay(pdMS_TO_TICKS(3600000)); 
         
         if (api_defects == NULL || api_defect_count == 0) continue;
 
@@ -321,7 +315,6 @@ void generate_dynamic_defect_buttons(void) {
     if (ui_Screen1 != NULL) {
         lv_obj_clear_flag(ui_Screen1, LV_OBJ_FLAG_SCROLLABLE);
         lv_obj_set_scroll_dir(ui_Screen1, LV_DIR_NONE);
-        lv_obj_remove_event_cb(ui_Screen1, ui_event_Screen1);
     }
 
     if (ui_btnRefresh != NULL) {

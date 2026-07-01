@@ -13,18 +13,21 @@ extern "C" {
 // SCREEN: ui_Screen1
 extern void ui_Screen1_screen_init(void);
 extern void ui_Screen1_screen_destroy(void);
-extern void ui_event_Screen1(lv_event_t * e);
 extern lv_obj_t * ui_Screen1;
+extern lv_obj_t * ui_btnRefresh;
+extern lv_obj_t * ui_lblIPAddress;
+extern void ui_event_mainPanel(lv_event_t * e);
+extern lv_obj_t * ui_mainPanel;
 extern lv_obj_t * ui_lblSerialNumber;
 extern void ui_event_txtSerialNumber(lv_event_t * e);
 extern lv_obj_t * ui_txtSerialNumber;
 extern lv_obj_t * ui_btnFail;
 extern lv_obj_t * ui_lblFailBtnText;
-extern lv_obj_t * ui_lblIPAddress;
 extern lv_obj_t * ui_ButtonContainer;
-extern lv_obj_t * ui_Keyboard4;
-extern lv_obj_t * ui_btnRefresh;
+extern lv_obj_t * ui_btnFinish;
+extern lv_obj_t * ui_lblFinish;
 extern lv_obj_t * ui_lblSelectedDeffectCode;
+extern lv_obj_t * ui_Keyboard4;
 // CUSTOM VARIABLES
 
 #ifdef __cplusplus

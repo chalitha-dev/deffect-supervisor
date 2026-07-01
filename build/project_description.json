@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "deffect-project",
-    "project_version":    "5d81e68-dirty",
+    "project_version":    "7c9a54f-dirty",
     "project_path":       "D:/Chalitha/expressIf/deffect_files",
     "idf_path":           "D:/Espressif/frameworks/esp-idf-v5.3.1",
     "build_dir":          "D:/Chalitha/expressIf/deffect_files/build",

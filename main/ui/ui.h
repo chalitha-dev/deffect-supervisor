@@ -29,9 +29,6 @@ extern "C" {
 
 extern lv_obj_t * ui____initial_actions0;
 
-// IMAGES AND IMAGE SETS
-LV_IMG_DECLARE(ui_img_2129918560);    // assets/rotate (1).png
-
 // UI INIT
 void ui_init(void);
 void ui_destroy(void);

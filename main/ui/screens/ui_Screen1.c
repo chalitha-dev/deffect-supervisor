@@ -18,6 +18,7 @@ lv_obj_t * ui_btnFinish = NULL;
 lv_obj_t * ui_lblFinish = NULL;
 lv_obj_t * ui_lblSelectedDeffectCode = NULL;
 lv_obj_t * ui_Keyboard4 = NULL;
+lv_obj_t * ui_lblPostStatus = NULL;
 // event funtions
 void ui_event_mainPanel(lv_event_t * e)
 {
@@ -177,6 +178,15 @@ void ui_Screen1_screen_init(void)
 
     lv_obj_set_style_text_font(ui_Keyboard4, &lv_font_montserrat_24, LV_PART_ITEMS | LV_STATE_DEFAULT);
 
+    ui_lblPostStatus = lv_label_create(ui_Screen1);
+    lv_obj_set_width(ui_lblPostStatus, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_lblPostStatus, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_lblPostStatus, -10);
+    lv_obj_set_y(ui_lblPostStatus, -145);
+    lv_obj_set_align(ui_lblPostStatus, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_lblPostStatus, "");
+    lv_obj_set_style_text_font(ui_lblPostStatus, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
+
     lv_obj_add_event_cb(ui_mainPanel, ui_event_mainPanel, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_txtSerialNumber, ui_event_txtSerialNumber, LV_EVENT_ALL, NULL);
     lv_keyboard_set_textarea(ui_Keyboard4, ui_txtSerialNumber);
@@ -201,5 +211,6 @@ void ui_Screen1_screen_destroy(void)
     ui_lblFinish = NULL;
     ui_lblSelectedDeffectCode = NULL;
     ui_Keyboard4 = NULL;
+    ui_lblPostStatus = NULL;
 
 }

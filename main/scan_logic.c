@@ -56,19 +56,60 @@ void send_scan_result_to_api(const char* serial, const char* defect_code, const 
     esp_http_client_set_post_field(client, post_data, strlen(post_data));
     esp_http_client_set_header(client, "Content-Type", "application/json");
 
+    // References to your UI elements
+    extern lv_obj_t * ui_lblPostStatus;
+    extern lv_obj_t * ui_lblSelectedDeffectCode;
+    extern lv_obj_t * ui_txtSerialNumber;
+
     esp_err_t err = esp_http_client_perform(client);
     if (err == ESP_OK) {
-		int status_code = esp_http_client_get_status_code(client);
+        int status_code = esp_http_client_get_status_code(client);
         ESP_LOGI(TAG, "HTTP POST Success! Status Code = %d", status_code);
         
         if (status_code >= 200 && status_code < 300) {
-            extern lv_obj_t * ui_txtSerialNumber;
+            // 1. Clear selected defect code UI text first
+            if (ui_lblSelectedDeffectCode != NULL) {
+                lv_label_set_text(ui_lblSelectedDeffectCode, "");
+            }
+
+            // 2. Clear input text area
             if (ui_txtSerialNumber != NULL) {
                 lv_textarea_set_text(ui_txtSerialNumber, "");
             }
+
+            // 3. Update status label to green success alert with variables
+            if (ui_lblPostStatus != NULL) {
+                lv_obj_set_style_text_color(ui_lblPostStatus, lv_color_make(0, 180, 0), LV_PART_MAIN | LV_STATE_DEFAULT); 
+                
+                if (strcmp(status, "FAIL") == 0) {
+                    lv_label_set_text_fmt(ui_lblPostStatus, "Success: %s Failed (%s)", serial, defect_code);
+                } else {
+                    lv_label_set_text_fmt(ui_lblPostStatus, "Success: %s Passed", serial);
+                }
+            }
+        } else {
+            // API responded but returned an error status code (e.g., 400, 500)
+            if (ui_lblSelectedDeffectCode != NULL) {
+                lv_label_set_text(ui_lblSelectedDeffectCode, "");
+            }
+
+            if (ui_lblPostStatus != NULL) {
+                lv_obj_set_style_text_color(ui_lblPostStatus, lv_color_make(255, 0, 0), LV_PART_MAIN | LV_STATE_DEFAULT);
+                lv_label_set_text_fmt(ui_lblPostStatus, "Error Status: %d", status_code);
+            }
         }
     } else {
+        // Network link down / Timeout exception
         ESP_LOGE(TAG, "HTTP POST request failed: %s", esp_err_to_name(err));
+
+        if (ui_lblSelectedDeffectCode != NULL) {
+            lv_label_set_text(ui_lblSelectedDeffectCode, "");
+        }
+
+        if (ui_lblPostStatus != NULL) {
+            lv_obj_set_style_text_color(ui_lblPostStatus, lv_color_make(255, 0, 0), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_fmt(ui_lblPostStatus, "Failed: %s", esp_err_to_name(err));
+        }
     }
     esp_http_client_cleanup(client);
 }
@@ -81,9 +122,9 @@ void defect_button_click_cb(lv_event_t * e) {
     const char *code = (const char*)btn->user_data; 
     
     if (code != NULL) {
+		lv_label_set_text(ui_lblPostStatus, "");
         strncpy(selected_defect_code, code, sizeof(selected_defect_code) - 1);
         selected_defect_code[sizeof(selected_defect_code) - 1] = '\0';
-        
         ESP_LOGI(TAG, "Defect selected. Holding Code: %s", selected_defect_code);
     }
 }
@@ -92,13 +133,34 @@ void defect_button_click_cb(lv_event_t * e) {
 // Fail Button Callback
 // ========================================================
 void fail_button_click_cb(lv_event_t * e) {
+    extern lv_obj_t * ui_lblPostStatus;
+    extern lv_obj_t * ui_lblSelectedDeffectCode;
+
+    // 1. Check if Serial Number is Missing
     if (!has_pending_scan || strlen(current_serial_number) == 0) {
         ESP_LOGW(TAG, "Cannot Fail: No serial number is currently active.");
+        
+        if (ui_lblSelectedDeffectCode != NULL) {
+            lv_label_set_text(ui_lblSelectedDeffectCode, "");
+        }
+        if (ui_lblPostStatus != NULL) {
+            lv_obj_set_style_text_color(ui_lblPostStatus, lv_color_make(255, 0, 0), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(ui_lblPostStatus, "Error: Missing Serial Number!");
+        }
         return;
     }
 
+    // 2. Check if Defect Code is Missing
     if (strlen(selected_defect_code) == 0) {
         ESP_LOGW(TAG, "Cannot Fail: Please pick a defect code component first.");
+        
+        if (ui_lblSelectedDeffectCode != NULL) {
+            lv_label_set_text(ui_lblSelectedDeffectCode, "");
+        }
+        if (ui_lblPostStatus != NULL) {
+            lv_obj_set_style_text_color(ui_lblPostStatus, lv_color_make(255, 0, 0), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(ui_lblPostStatus, "Error: Missing Defect Code!");
+        }
         return;
     }
 
@@ -110,14 +172,25 @@ void fail_button_click_cb(lv_event_t * e) {
 // Finish Button Callback (Pass Execution Logic)
 // ========================================================
 void finish_button_click_cb(lv_event_t * e) {
-    if (has_pending_scan && strlen(current_serial_number) > 0) {
-        ESP_LOGI(TAG, "Finish button touched. Posting current serial [%s] as PASS.", current_serial_number);
-        
-        // Post data as Pass without any defect code structure
-        send_scan_result_to_api(current_serial_number, "", "PASS");
-    } else {
+    extern lv_obj_t * ui_lblPostStatus;
+    extern lv_obj_t * ui_lblSelectedDeffectCode;
+
+    // Check if Serial Number is Missing for Pass execution
+    if (!has_pending_scan || strlen(current_serial_number) == 0) {
         ESP_LOGW(TAG, "Finish button touched, but no active serial exists to pass.");
+        
+        if (ui_lblSelectedDeffectCode != NULL) {
+            lv_label_set_text(ui_lblSelectedDeffectCode, "");
+        }
+        if (ui_lblPostStatus != NULL) {
+            lv_obj_set_style_text_color(ui_lblPostStatus, lv_color_make(255, 0, 0), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(ui_lblPostStatus, "Error: Missing Serial Number!");
+        }
+        return;
     }
+
+    ESP_LOGI(TAG, "Finish button touched. Posting current serial [%s] as PASS.", current_serial_number);
+    send_scan_result_to_api(current_serial_number, "", "PASS");
     
     // Clear out serial number and defect codes entirely after submission
     clear_scanner_state();
@@ -158,6 +231,17 @@ void keyboard_ready_click_cb(lv_event_t * e) {
             on_serial_number_scanned(text);
             lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
         } else {
+            // Screen handling if user clicks checkmark on an completely blank text block
+            extern lv_obj_t * ui_lblPostStatus;
+            extern lv_obj_t * ui_lblSelectedDeffectCode;
+            
+            if (ui_lblSelectedDeffectCode != NULL) {
+                lv_label_set_text(ui_lblSelectedDeffectCode, "");
+            }
+            if (ui_lblPostStatus != NULL) {
+                lv_obj_set_style_text_color(ui_lblPostStatus, lv_color_make(255, 0, 0), LV_PART_MAIN | LV_STATE_DEFAULT);
+                lv_label_set_text(ui_lblPostStatus, "Error: Missing Serial Number!");
+            }
             ESP_LOGW(TAG, "Enter pressed, but input field is completely empty!");
         }
     }

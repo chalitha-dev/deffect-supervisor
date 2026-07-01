@@ -28,6 +28,7 @@ extern lv_obj_t * ui_btnFinish;
 extern lv_obj_t * ui_lblFinish;
 extern lv_obj_t * ui_lblSelectedDeffectCode;
 extern lv_obj_t * ui_Keyboard4;
+extern lv_obj_t * ui_lblPostStatus;
 // CUSTOM VARIABLES
 
 #ifdef __cplusplus

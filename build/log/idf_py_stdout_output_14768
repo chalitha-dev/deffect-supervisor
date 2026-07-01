@@ -13,7 +13,7 @@ Processing 4 dependencies:
 Loading defaults file D:/Chalitha/expressIf/deffect_files/sdkconfig.defaults...
 Loading defaults file D:/Chalitha/expressIf/deffect_files/sdkconfig.defaults.esp32s3...
 -- Compiler supported targets: xtensa-esp-elf
--- App "deffect-project" version: 7c9a54f-dirty
+-- App "deffect-project" version: 40a9fa0-dirty
 -- Adding linker script D:/Chalitha/expressIf/deffect_files/build/esp-idf/esp_system/ld/memory.ld
 -- Adding linker script D:/Chalitha/expressIf/deffect_files/build/esp-idf/esp_system/ld/sections.ld.in
 -- Adding linker script D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_rom/esp32s3/ld/esp32s3.rom.ld
